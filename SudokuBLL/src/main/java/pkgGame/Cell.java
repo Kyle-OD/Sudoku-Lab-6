@@ -7,6 +7,15 @@ public class Cell implements Serializable {
 	private int iRow;
 	private int iCol;
 	private int iCellValue;
+	private boolean isPreset = false;
+
+	public boolean isPreset() {
+		return isPreset;
+	}
+
+	public void setPreset(boolean isPreset) {
+		this.isPreset = isPreset;
+	}
 
 	public Cell(int iRow, int iCol) {
 		super();

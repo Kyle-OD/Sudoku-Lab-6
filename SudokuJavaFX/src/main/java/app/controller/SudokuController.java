@@ -228,8 +228,13 @@ public class SudokuController implements Initializable {
 			public void handle(DragEvent event) {
 				if (event.getGestureSource() != spTrashCan && event.getDragboard().hasContent(myTrashCanFormat)) {
 					// Don't let the user drag over items that already have a cell value set
-
-					event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+					Dragboard db = event.getDragboard();
+					Cell cellFrom = (Cell) db.getContent(myTrashCanFormat);
+					if(cellFrom.isPreset()) {
+						event.acceptTransferModes(TransferMode.NONE);
+					} else{
+						event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+					}
 				}
 				event.consume();
 			}
@@ -241,7 +246,7 @@ public class SudokuController implements Initializable {
 				boolean success = false;
 				if (db.hasContent(myTrashCanFormat)) {
 					Cell CellFrom = (Cell) db.getContent(myTrashCanFormat);
-
+					game.getSudoku().getPuzzle()[CellFrom.getiRow()][CellFrom.getiCol()] = 0;
 					game.getSudoku().PrintPuzzle();
 					event.setDropCompleted(success);
 					event.consume();
@@ -298,6 +303,7 @@ public class SudokuController implements Initializable {
 					ImageView iv = new ImageView(GetImage(s.getPuzzle()[iRow][iCol]));
 					paneTarget.getCell().setiCellValue(s.getPuzzle()[iRow][iCol]);
 					paneTarget.getChildren().add(iv);
+					paneTarget.getCell().setPreset(true);
 				}
 
 				paneTarget.getStyleClass().clear(); // Clear any errant styling in the pane
@@ -328,9 +334,15 @@ public class SudokuController implements Initializable {
 				paneTarget.setOnDragOver(new EventHandler<DragEvent>() {
 					public void handle(DragEvent event) {
 						if (event.getGestureSource() != paneTarget && event.getDragboard().hasContent(myFormat)) {
+							Dragboard db = event.getDragboard();
+							Cell CellFrom = (Cell) db.getContent(myFormat);
+							Cell CellTo = (Cell) paneTarget.getCell();
 							// Don't let the user drag over items that already have a cell value set
 							if (paneTarget.getCell().getiCellValue() == 0) {
 								event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+							}
+							if ((!s.isValidValue(CellTo.getiRow(), CellTo.getiCol(), CellFrom.getiCellValue()))&&(game.getShowHints())) {
+								event.acceptTransferModes(TransferMode.NONE);
 							}
 						}
 						event.consume();
@@ -393,7 +405,7 @@ public class SudokuController implements Initializable {
 
 								// TODO: Set the message for mistakes
 								if (game.getShowHints()) {
-
+									
 								}
 							}
 
@@ -403,11 +415,12 @@ public class SudokuController implements Initializable {
 							paneTarget.getCell().setiCellValue(CellFrom.getiCellValue());
 							paneTarget.getChildren().clear();
 							paneTarget.getChildren().add(iv);
+							paneTarget.getCell().setPreset(false);
 							System.out.println(CellFrom.getiCellValue());
 							
 							
 							
-							game.getSudoku().getPuzzle()[CellFrom.getiRow()][CellFrom.getiCol()] = CellFrom.getiCellValue();
+							game.getSudoku().getPuzzle()[CellTo.getiRow()][CellTo.getiCol()] = CellFrom.getiCellValue();
 							
 							
 							success = true;

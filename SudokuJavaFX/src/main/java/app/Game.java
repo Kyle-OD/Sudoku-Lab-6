@@ -42,7 +42,7 @@ public class Game extends Application {
 		try {
 
 			FXMLLoader loader = new FXMLLoader();
-			loader = new FXMLLoader(getClass()
+			loader = new FXMLLoader(getClass()	 
 					.getResource("/game/app/view/GameBorder.fxml"));
 			GameBorderPane = (BorderPane) loader.load();
 			Scene scene = new Scene(GameBorderPane);
